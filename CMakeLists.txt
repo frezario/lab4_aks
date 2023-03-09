@@ -8,7 +8,13 @@ set(PROJECT_NAME integrate_parallel_queue)
 project(${PROJECT_NAME} C CXX) # project(${PROJECT_NAME} C CXX ASM)
 
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_FLAGS -pthread)
+
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+add_executable(${PROJECT_NAME} main.cpp
+		options_parser/options_parser.cpp options_parser/options_parser.h thread_safe_queue.h thread_safe_queue.h integrals.cpp)
+target_link_libraries(integrate_parallel_queue PRIVATE Threads::Threads)
+#target_link_libraries(integrate_parallel_queue Threads::Threads)
 
 ##########################################################
 # User configurable options of the template
@@ -55,9 +61,6 @@ include(cmake/CompilerWarnings.cmake)
 # Project files, packages, libraries and so on
 ##########################################################
 
-#! Project main executable source compilation
-add_executable(${PROJECT_NAME} main.cpp
-		options_parser/options_parser.cpp options_parser/options_parser.h thread_safe_queue.h thread_safe_queue.h integrals.cpp)
 
 #! Put path to your project headers
 target_include_directories(${PROJECT_NAME} PRIVATE options_parser)

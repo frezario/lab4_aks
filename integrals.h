@@ -238,6 +238,8 @@ namespace integrals {
                                fabs((second_riemann_sum - first_riemann_sum) / second_riemann_sum));
     }
 
+    std::pair<size_t, size_t> get_interval_size(size_t pts_per_interval, size_t steps_x, size_t steps_y);
+
 
     template<class F>
     void consume(const F &function, thread_safe_queue<Interval> &input_deque, thread_safe_queue<double> &output_deque) {
@@ -276,12 +278,22 @@ namespace integrals {
         double second_riemann_sum = 0;
 
         // making the number of steps over x be divisible by pts_per_interval
-        auto steps_x = init_steps_x;
-        if (steps_x % pts_per_interval != 0) {
-            std::cout<<"error"<<std::endl;
-            pts_per_interval += (pts_per_interval - init_steps_x % pts_per_interval);
-        }
         auto steps_y = init_steps_y;
+        auto steps_x = init_steps_x;
+
+        // dividing the whole region into subintervals
+        if (steps_x > pts_per_interval) {
+
+        }
+
+        auto sizes = get_interval_size(pts_per_interval, steps_x, steps_y);
+        auto i_height = sizes.first;
+        auto i_width = sizes.second;
+
+        if (i_height == 0) {
+            std::cerr << "Error: Unable to split the region into the intervals with " << pts_per_interval << " points per interval" << std::endl;
+            exit(7);
+        }
         size_t counter = 0;
 
         // starting consumers
@@ -295,8 +307,8 @@ namespace integrals {
             auto delta_y = (y_end - y_start) / (double) steps_y;
             auto num_of_intervals = steps_x * steps_y / pts_per_interval;
             // creating intervals to give consumers
-            for (size_t step_y = 0; step_y != steps_y; step_y++) {
-                for (size_t step_x = 0; step_x != steps_x; step_x += pts_per_interval) {
+            for (size_t step_y = 0; step_y < steps_y; step_y += i_height) {
+                for (size_t step_x = 0; step_x < steps_x; step_x += i_width) {
                     auto i = Interval{x_start + (double)step_x * delta_x, y_start + (double)step_y * delta_y, delta_x, delta_y, pts_per_interval, 1};
                     input_deque.push(i);
                 }
