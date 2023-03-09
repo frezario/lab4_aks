@@ -22,22 +22,17 @@ public:
 
     thread_safe_queue &operator=(const thread_safe_queue &) = delete;
 
-    [[nodiscard]] size_t get_size() const {
-        std::unique_lock<std::mutex> lg{data_mutex};
-        return queue.size();
-    }
-
     void push(const T &val) {
         {
             std::lock_guard<std::mutex> lg{data_mutex};
             queue.push_back(val);
         }
-        data_cond_var.notify_one();
+        data_cond_var.notify_all();
     }
 
     T pop() {
         std::unique_lock<std::mutex> lck{data_mutex};
-        data_cond_var.wait(lck, [this] {return queue.empty();});
+        data_cond_var.wait(lck, [this] {return !queue.empty();});
         auto res = queue.front();
         queue.pop_front();
         return res;

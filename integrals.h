@@ -10,6 +10,7 @@
 #include <vector>
 #include <thread>
 #include <numeric>
+#include <iostream>
 #include "thread_safe_queue.h"
 
 namespace integrals {
@@ -94,8 +95,8 @@ namespace integrals {
             steps_x *= 2;
             steps_y *= 2;
             counter++;
-        } while ((fabs(second_riemann_sum - first_riemann_sum) > abs_err &&
-                  fabs((second_riemann_sum - first_riemann_sum) / second_riemann_sum) > rel_err) ||
+        } while ((fabs(second_riemann_sum - first_riemann_sum) > abs_err ||
+                  fabs((second_riemann_sum - first_riemann_sum) / second_riemann_sum) > rel_err) &&
                  counter < max_iter);
 
         return std::make_tuple(second_riemann_sum, fabs(second_riemann_sum - first_riemann_sum),
@@ -229,8 +230,8 @@ namespace integrals {
             steps_x *= 2;
             steps_y *= 2;
             counter++;
-        } while ((fabs(second_riemann_sum - first_riemann_sum) > abs_err &&
-                  fabs((second_riemann_sum - first_riemann_sum) / second_riemann_sum) > rel_err) ||
+        } while ((fabs(second_riemann_sum - first_riemann_sum) > abs_err ||
+                  fabs((second_riemann_sum - first_riemann_sum) / second_riemann_sum) > rel_err) &&
                  counter < max_iter);
 
         return std::make_tuple(second_riemann_sum, fabs(second_riemann_sum - first_riemann_sum),
@@ -244,6 +245,7 @@ namespace integrals {
             auto interval = input_deque.pop();
             // the convention is to use Nx = 0 as a poison pill.
             if (interval.Nx == 0) {
+                input_deque.push(interval);
                 break;
             }
             auto res = calculate_riemann_sum_interval<F>(function, interval.x0, interval.dx, interval.y0, interval.dy, interval.Nx,
@@ -274,13 +276,17 @@ namespace integrals {
         double second_riemann_sum = 0;
 
         // making the number of steps over x be divisible by pts_per_interval
-        auto steps_x = init_steps_x + (pts_per_interval - init_steps_x % pts_per_interval);
+        auto steps_x = init_steps_x;
+        if (steps_x % pts_per_interval != 0) {
+            std::cout<<"error"<<std::endl;
+            pts_per_interval += (pts_per_interval - init_steps_x % pts_per_interval);
+        }
         auto steps_y = init_steps_y;
         size_t counter = 0;
 
         // starting consumers
         for (size_t i{0}; i != threads.size(); i++) {
-            threads[i] = std::thread(std::ref(consume<F>), std::ref(function), std::ref(input_deque), std::ref(output_deque));
+            threads[i] = std::thread(consume<F>, std::ref(function), std::ref(input_deque), std::ref(output_deque));
         }
 
         do {
@@ -291,7 +297,8 @@ namespace integrals {
             // creating intervals to give consumers
             for (size_t step_y = 0; step_y != steps_y; step_y++) {
                 for (size_t step_x = 0; step_x != steps_x; step_x += pts_per_interval) {
-                    input_deque.push(Interval{x_start, y_start, delta_x, delta_y, pts_per_interval, 1});
+                    auto i = Interval{x_start + (double)step_x * delta_x, y_start + (double)step_y * delta_y, delta_x, delta_y, pts_per_interval, 1};
+                    input_deque.push(i);
                 }
             }
 
@@ -305,9 +312,15 @@ namespace integrals {
             steps_x *= 2;
             steps_y *= 2;
             counter++;
-        } while ((fabs(second_riemann_sum - first_riemann_sum) > abs_err &&
-                  fabs((second_riemann_sum - first_riemann_sum) / second_riemann_sum) > rel_err) ||
+        } while ((fabs(second_riemann_sum - first_riemann_sum) > abs_err ||
+                  fabs((second_riemann_sum - first_riemann_sum) / second_riemann_sum) > rel_err) &&
                  counter < max_iter);
+        input_deque.push(Interval{0, 0, 0, 0, 0, 0});
+
+        for (size_t i{0}; i != threads.size(); i++) {
+            threads[i].join();
+        }
+
         return std::make_tuple(second_riemann_sum, fabs(second_riemann_sum - first_riemann_sum),
                                fabs((second_riemann_sum - first_riemann_sum) / second_riemann_sum));
     }
