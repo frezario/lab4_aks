@@ -20,7 +20,7 @@ set(CMAKE_CXX_FLAGS -pthread)
 #  but sometimes it creates too much trouble, so default is OFF.
 set(WARNINGS_AS_ERRORS OFF)
 
-#! Always use PVS Studio while developing. 
+#! Always use PVS Studio while developing.
 set(ENABLE_PVS_STUDIO OFF)
 
 #! Select appropriate sanitizers.
@@ -33,12 +33,12 @@ set(ENABLE_PVS_STUDIO OFF)
 #  Info: https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html
 set(ENABLE_UBSan OFF)
 #! AddressSanitizer -- detects use after free or after scope exit,
-#  memory overflows and leaks.  
+#  memory overflows and leaks.
 #  Info: https://github.com/google/sanitizers/wiki/AddressSanitizer
 set(ENABLE_ASAN OFF)
 #! ThreadSanitizer -- detects data races.
 set(ENABLE_TSan OFF)
-#! MemorySanitizer detects uninitialized memory reads 
+#! MemorySanitizer detects uninitialized memory reads
 #  Info: https://github.com/google/sanitizers/wiki/MemorySanitizer
 set(ENABLE_MSAN OFF)
 
@@ -57,7 +57,7 @@ include(cmake/CompilerWarnings.cmake)
 
 #! Project main executable source compilation
 add_executable(${PROJECT_NAME} main.cpp
-				options_parser/options_parser.cpp options_parser/options_parser.h thread_safe_queue.h thread_safe_queue.h integrals.cpp)
+		options_parser/options_parser.cpp options_parser/options_parser.h thread_safe_queue.h thread_safe_queue.h integrals.cpp)
 
 #! Put path to your project headers
 target_include_directories(${PROJECT_NAME} PRIVATE options_parser)
@@ -68,7 +68,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE options_parser)
 #target_include_directories(${PROJECT_NAME} PRIVATE ${Boost_INCLUDE_DIR})
 #target_link_libraries(${PROJECT_NAME} Boost::program_options Boost::system)
 
-						
+
 ##########################################################
 # Fixed CMakeLists.txt part 
 ##########################################################
