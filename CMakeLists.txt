@@ -4,10 +4,11 @@ cmake_minimum_required(VERSION 3.15)
 
 #! CHANGE YOUR PROJECT NAME
 #  It is used as your project's main executable name. 
-set(PROJECT_NAME template)
+set(PROJECT_NAME integrate_parallel_queue)
 project(${PROJECT_NAME} C CXX) # project(${PROJECT_NAME} C CXX ASM)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_FLAGS -pthread)
 
 ##########################################################
 # User configurable options of the template
@@ -56,16 +57,16 @@ include(cmake/CompilerWarnings.cmake)
 
 #! Project main executable source compilation
 add_executable(${PROJECT_NAME} main.cpp
-				options_parser/options_parser.cpp options_parser/options_parser.h)
+				options_parser/options_parser.cpp options_parser/options_parser.h thread_safe_queue.h thread_safe_queue.h integrals.cpp)
 
 #! Put path to your project headers
 target_include_directories(${PROJECT_NAME} PRIVATE options_parser)
 
 #! Add external packages
 # options_parser requires boost::program_options library
-find_package(Boost 1.71.0 COMPONENTS program_options system REQUIRED)
-target_include_directories(${PROJECT_NAME} PRIVATE ${Boost_INCLUDE_DIR})
-target_link_libraries(${PROJECT_NAME} Boost::program_options Boost::system)
+#find_package(Boost 1.71.0 COMPONENTS program_options system REQUIRED)
+#target_include_directories(${PROJECT_NAME} PRIVATE ${Boost_INCLUDE_DIR})
+#target_link_libraries(${PROJECT_NAME} Boost::program_options Boost::system)
 
 						
 ##########################################################
