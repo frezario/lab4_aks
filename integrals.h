@@ -280,7 +280,6 @@ namespace integrals {
         auto steps_y = init_steps_y;
         auto steps_x = init_steps_x;
 
-
         auto sizes = get_interval_size(pts_per_interval, steps_x, steps_y);
         auto i_height = sizes.first;
         auto i_width = sizes.second;
@@ -298,14 +297,23 @@ namespace integrals {
         }
 
         do {
+            if (counter != 0) {
+                sizes = get_interval_size(pts_per_interval, steps_x, steps_y);
+                i_height = sizes.first;
+                i_width = sizes.second;
+            }
             first_riemann_sum = second_riemann_sum;
             auto delta_x = (x_end - x_start) / (double) steps_x;
             auto delta_y = (y_end - y_start) / (double) steps_y;
-            auto num_of_intervals = steps_x * steps_y / pts_per_interval;
+
             // creating intervals to give consumers
+            size_t num_of_intervals = 0;
             for (size_t step_y = 0; step_y < steps_y; step_y += i_height) {
                 for (size_t step_x = 0; step_x < steps_x; step_x += i_width) {
-                    auto i = Interval{x_start + (double)step_x * delta_x, y_start + (double)step_y * delta_y, delta_x, delta_y, i_width, i_height};
+                    auto width = std::min(i_width, steps_x - step_x);
+                    auto height = std::min(i_height, steps_y - step_y);
+                    auto i = Interval{x_start + (double)step_x * delta_x, y_start + (double)step_y * delta_y, delta_x, delta_y, width, height};
+                    num_of_intervals++;
                     input_deque.push(i);
                 }
             }
