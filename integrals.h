@@ -277,14 +277,9 @@ namespace integrals {
         double first_riemann_sum = 0;
         double second_riemann_sum = 0;
 
-        // making the number of steps over x be divisible by pts_per_interval
         auto steps_y = init_steps_y;
         auto steps_x = init_steps_x;
 
-        // dividing the whole region into subintervals
-        if (steps_x > pts_per_interval) {
-
-        }
 
         auto sizes = get_interval_size(pts_per_interval, steps_x, steps_y);
         auto i_height = sizes.first;
@@ -294,6 +289,7 @@ namespace integrals {
             std::cerr << "Error: Unable to split the region into the intervals with " << pts_per_interval << " points per interval" << std::endl;
             exit(7);
         }
+
         size_t counter = 0;
 
         // starting consumers
@@ -309,7 +305,7 @@ namespace integrals {
             // creating intervals to give consumers
             for (size_t step_y = 0; step_y < steps_y; step_y += i_height) {
                 for (size_t step_x = 0; step_x < steps_x; step_x += i_width) {
-                    auto i = Interval{x_start + (double)step_x * delta_x, y_start + (double)step_y * delta_y, delta_x, delta_y, pts_per_interval, 1};
+                    auto i = Interval{x_start + (double)step_x * delta_x, y_start + (double)step_y * delta_y, delta_x, delta_y, i_width, i_height};
                     input_deque.push(i);
                 }
             }
@@ -326,7 +322,7 @@ namespace integrals {
             counter++;
         } while ((fabs(second_riemann_sum - first_riemann_sum) > abs_err ||
                   fabs((second_riemann_sum - first_riemann_sum) / second_riemann_sum) > rel_err) &&
-                 counter < max_iter);
+                 counter <= max_iter);
         input_deque.push(Interval{0, 0, 0, 0, 0, 0});
 
         for (size_t i{0}; i != threads.size(); i++) {
