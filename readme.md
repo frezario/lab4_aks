@@ -38,3 +38,27 @@ To write a clean code, we've made a strong assumption that user will chose only 
 ### Results
 
 We've made an alternative to prvious integral computating program using thread-safe queue. Although, the result is not better than previous one, we've learned another good general way to parallelize computations.
+
+#### Determination of the optimal number of points
+
+This results for case when max iteration in config file is 7 and with 4 threads.
+
+![100-1000](https://user-images.githubusercontent.com/92572643/224485078-f0a7e0c3-b94c-4c86-8005-9ca3778030f6.png)
+![10-200](https://user-images.githubusercontent.com/92572643/224485137-b4d9d89c-288a-4304-86c5-033c1edc1cf4.png)
+
+The second graph is unstable and all time values are similar, so we took 50 points as the optimal amount. It should be noted that the size of the interval per thread directly depends on the maximum iterations in config file, as the number of intervals increases with each iteration.
+
+#### Compare with and without queue
+
+We used determined number of points to compare programs with and without queue.
+
+![compare_min](https://user-images.githubusercontent.com/92572643/224485416-4c0114b6-4e3f-40f7-be55-5a93cebca095.png)
+![compare_avg](https://user-images.githubusercontent.com/92572643/224485426-522260eb-64e2-4420-a88b-ad68065c0bb7.png)
+
+Here also, as we take small number of points, script with queue works faster with more threads.
+
+#### Acceleration of parallelization
+
+![acceleration](https://user-images.githubusercontent.com/92572643/224486170-35c4c187-68fc-4c04-96b8-1cbfeab6d749.png)
+
+As $n$ - the number of threads increase, the coefficient decreases due to dividing the function by $n$.
