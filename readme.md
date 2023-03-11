@@ -4,7 +4,7 @@ Authors (team):
 Demchuk Nazar: https://github.com/frezario
 Oleksiuk Liubomyr: https://github.com/Liubavaa
 
-## Prerequisites
+### Prerequisites
 
 C/C++ compiler, CMake, python3
 
@@ -33,8 +33,8 @@ cd bin
 
 ### Important!
 
-To write a clean code, we've made a strong assumption that user will chose only those amount of points per interval, which can be factorized so that it will form a rectangle, and the sides of this rectangle are the factors of the init_steps_x and init_steps_y in .cfg file. That's because in the opposite case the computations used to determine the size of each subinterval become too complex and boilerplate. Also, the subintervals would be of different size and in some cases will be unrepresantable as rectangles.
+To write a clean code, we've made a strong assumption that user will chose only those amount of points per interval, which is reasonable to build a rectangle interval with. That's because in the opposite case the computations used to determine the size of each subinterval become too complex and boilerplate. Also, the subintervals would be of different size and in some cases will be unrepresantable as rectangles.
 
 ### Results
 
-<mark>DESCRIBE THE RESULTS OF THE WORK YOU DID. WHAT DID YOU LEARN OR FIND INTERESTING?</mark>
+We've made an alternative to prvious integral computating program using thread-safe queue. Although, the result is not better than previous one, we've learned another good general way to parallelize computations.
