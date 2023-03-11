@@ -16,12 +16,20 @@ C/C++ compiler, CMake, python3
 
 ### Usage
 
-To run a script, use the following command:
-
+To run a script:
+- that show the graph of points and time:
 ```
 python3 estimate_points.py
 ```
+- that show the graph of times with and without queue:
+```
+python3 plot.py
+```
+- that show the graph with acceleration:
 
+```
+python3 acceleration.py
+```
 To run the c++ program, compile it and run as:
 
 ```
